@@ -135,7 +135,8 @@ def sentence_compound(list_kana,list_acc,list_aModType,list_aConType,list_span):
                 list_aModType[n-1]="*"
             #係り受け句を一個ずつずらす
             span_apply=span_apply+1
-        list_span[n]=list_span[n]+span_apply
+        if n!=len(list_kana)-1:
+            list_span[n+1]=copy.deepcopy(list_span[n+1])+span_apply
     #係り受け区間ごとに格納する==【編集中・検討中】==
     new_list_kana=[]
     new_list_acc=[]
@@ -328,8 +329,8 @@ def sentence_compound(list_kana,list_acc,list_aModType,list_aConType,list_span):
     #===合成してAquestalk出力編集中=#
     output=""
     #デバッグ用
-    print(new_list_kana)
-    #print(new_list_aConType)
+    #print(new_list_kana)
+    #print(list_span)
     for m in range(len(new_list_kana)):
         for n in range(len(new_list_kana[m])):
             #独立句以外くっつける(アクセント核を更新して、更新した際に巻き込んだ側を[-]にする)「?、。」残したものは/がわりになる。
