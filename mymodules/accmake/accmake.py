@@ -27,6 +27,11 @@ bo_aiueo={"ァ":"ア","ィ":"イ","ゥ":"ウ","ェ":"エ","ォ":"オ",\
 "コ":"オ","ソ":"オ","ト":"オ","ノ":"オ","ホ":"オ","モ":"オ","ヨ":"オ","ロ":"オ","ヲ":"オ","ゴ":"オ","ゾ":"オ","ド":"オ","ボ":"オ","ポ":"オ"
 }
 def bo2on(kana):
+    """
+    summary:repalce(ー,[所定の仮名])
+    param:str(カタカナ)
+    return:str(カタカナ)
+    """
     newkana=""
     for n in range(len(kana)):
         if n!=0:
@@ -42,6 +47,11 @@ def bo2on(kana):
     return newkana
 
 def kana2readly_kana(kanamozi):
+    """
+    summary:return 音素
+    param:str(カタカナ)
+    return:list(音素)
+    """
     read_kana=""
     yoon_flug=0
     #拗音処理
@@ -75,19 +85,29 @@ def kana2readly_kana(kanamozi):
     return list_read_kana
     
 def kana_count(katakana):
+    """
+    summary:count 音素
+    param:str(カタカナ)
+    return:int(音素数)
+    """
     moto=kana2readly_kana(katakana)
     return len(moto)
 
 def word_compound(kanamozi,acc_num):
+    """
+    summary:カタカナ、アクセント核->aquestalk-like記法
+    param:str(カタカナ)、int(アクセント核)
+    return:str(aquestlike記法)
+    """
     #文末、疑問文がきた時の処理を挟む
     kana=bo2on(kanamozi)
-    if acc_num==0:
+    if int(acc_num)==0:
         return kana+"'"
     else:
         minikana=""
         readly_kana=kana2readly_kana(kana)
         for n in range(len(readly_kana)):
-            if n==acc_num-1:
+            if n==int(acc_num)-1:
                 minikana=minikana+readly_kana[n]+"'"
             else:
                 minikana=minikana+readly_kana[n]
@@ -95,6 +115,11 @@ def word_compound(kanamozi,acc_num):
     
 #======【編集中】===========
 def sentence_compound(list_kana,list_acc,list_aModType,list_aConType,list_span):
+    """
+    summary:分かち書きした情報からaquestalk記法に持って行く
+    param:list(仮名),list(アクセント核),list(aModType),list(aConType),list(係り受け番号)
+    return:str(aquestlike記法)
+    """
     #句読点、はてなは係り受け末尾にあるやつだけ残す。残したものは/がわりになる。
     replace_kigo=[["?","ハテナ",1,"C1"],\
                 ["？","ハテナ",1,"C1"],\

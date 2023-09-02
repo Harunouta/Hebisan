@@ -5,6 +5,11 @@ import time
 url="http://localhost:50021/"
 
 def get_speaker_id(now_url):
+    """
+    summary:speaker_idを取ってくる
+    param:str(voicevoxのapiのurl)
+    return:dict(話者リスト)
+    """
     Speaker_id={}
     Core_Versions=requests.get(now_url+"core_versions")
     #print("Core_Versions:",Core_Versions.json())
@@ -20,6 +25,12 @@ def get_speaker_id(now_url):
     return Speaker_id
     
 def play_words(now_url,sentence,chara_ID,voice_param_0,voice_param_1,voice_param_2,voice_param_3,voice_param_4,voice_param_5):
+    """
+    summary:音声合成する
+    param:str(voicevoxのapiのurl),str(sentence),int(chara_ID),
+    int(voice_param_0),int(voice_param_1),int(voice_param_2),int(voice_param_3),int(voice_param_4),int(voice_param_5)
+    return:0
+    """
     res1=requests.post(now_url+"audio_query",params={"text":sentence.replace("'","").replace("/","").replace("_",""),"speaker":chara_ID})
     res2=requests.post(now_url+"accent_phrases",params={"text":sentence,"speaker":chara_ID,"is_kana":"True"})
     old_json=res1.json()
