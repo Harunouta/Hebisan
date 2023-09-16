@@ -8,11 +8,12 @@ from tkinter.scrolledtext import ScrolledText
 
 from mymodules.accmake import accmake as AM
 from mymodules.JoinJoin import JoinVoiceVox as JV
+from mymodules.JoinJoin import JoinCOEIROINKv1 as VCO
 
 #初期設定
 nlp=spacy.load("ja_ginza")
 ginza.set_split_mode(nlp,"C")
-soft_flug=0#2:VOICEVOX,1:COEIROINK
+soft_flug=0#2:VOICEVOX,1:COEIROINK_ver1,3:COEIROINK_ver2
 voice={}
 url=""
 #accent関連変数
@@ -108,7 +109,7 @@ def join_voicevox():
     chara_list.grid(row=0,column=0)
     
     
-def join_coeiro():
+def join_coeiro_1():
     global root,voice_list,voicevox_frame,voicevox_entry,chara_list,soft_flug
     dlg_modal=tk.Toplevel(root)
     dlg_modal.title("COEIROINK設定")
@@ -147,14 +148,54 @@ def join_coeiro():
     voicevox_chara_frame.grid(row=0,column=1)
     chara_list.grid(row=0,column=0)
     
-    
+def join_coeiro_2():
+    global root,voice_list,voicevox_frame,voicevox_entry,chara_list,soft_flug
+    dlg_modal=tk.Toplevel(root)
+    dlg_modal.title("COEIROINK設定")
+    dlg_modal.geometry("750x300")
+    dlg_modal.grab_set()
+    dlg_modal.focus_set()
+    #以下フレーム等等
+    voicevox_frame=ttk.Frame(dlg_modal)
+    voicevox_label=ttk.Label(voicevox_frame,text="COEIROINK(V1は末尾が1,V2は末尾が2)：")
+    voicevox_entry=ttk.Entry(voicevox_frame,width=25)
+    voicevox_entry.insert(tk.END,"http://localhost:50032/")#version2は"http://localhost:50032/"
+    voicevox_button=ttk.Button(voicevox_frame,text="キャラ取得",command=get_character)
+    soft_flug=1
+    #各種ウィジェットの設定
+    """
+        0 1_2
+    0
+    1
+    ...
+    """
+    voicevox_frame.grid(row=0,column=0)
+    voicevox_label.grid(row=0,column=0)
+    voicevox_entry.grid(row=0,column=1)
+    voicevox_button.grid(row=1,columns=1)
+    #キャラ表示部分
+    voicevox_chara_frame=ttk.Frame(dlg_modal)
+    chara_list_var=tk.StringVar(value=voice_list)
+    chara_list=tk.Listbox(voicevox_chara_frame,listvariable=chara_list_var,height=10)
+    #各種ウィジェットの設定
+    """
+        0 1_2
+    0
+    1
+    ...
+    """
+    voicevox_chara_frame.grid(row=0,column=1)
+    chara_list.grid(row=0,column=0)
     
 #キャラ取得部分
 def get_character():
     global voice_list,voicevox_entry,voice,chara_list_var,chara_list,voice_combobox,soft_flug,url
-    url=voicevox_entry.get()
     if soft_flug==2:
+        url=voicevox_entry.get()
         voice=JV.get_speaker_id(url)
+    elif soft_flug==1:
+        url=voicevox_entry.get()
+        voice=VCO.get_speaker_id(url)
     else:
         pass
     voice_list=list(voice.keys())
@@ -177,6 +218,9 @@ def play():
     if soft_flug==2:
         JV.play_words(url,Talk_sentence,voice[voice_combobox.get()],\
     voice_param[0],voice_param[1],voice_param[2],voice_param[3],voice_param[4],voice_param[5])
+    if soft_flug==1:
+        VCO.play_words(url,Talk_sentence,voice[voice_combobox.get()],\
+    voice_param[0],voice_param[1],voice_param[2],voice_param[3],voice_param[4],voice_param[5])
         pass
     
 #この単語だけ再生
@@ -189,6 +233,9 @@ def play_word():
     Talk_sentence=AM.word_compound(now_kana,now_acc)
     if soft_flug==0:
         JV.play_words(url,Talk_sentence,voice[voice_combobox.get()],\
+    voice_param[0],voice_param[1],voice_param[2],voice_param[3],voice_param[4],voice_param[5])
+    if soft_flug==1:
+        VCO.play_words(url,Talk_sentence,voice[voice_combobox.get()],\
     voice_param[0],voice_param[1],voice_param[2],voice_param[3],voice_param[4],voice_param[5])
         #print(Talk_sentence)
         #print(voice[voice_combobox.get()])
@@ -512,7 +559,8 @@ menu_editing.bind_all("<Command-c>",Copy_command)
 menu_editing.bind_all("<Command-v>",Paste_command,)
 menu.add_cascade(label="設定",menu=menu_setting)
 menu_setting.add_command(label="VoiceVox設定",command=join_voicevox)
-#menu_setting.add_command(label="COEIROINK設定",command=join_coeiro)
+menu_setting.add_command(label="COEIROINK_ver1設定",command=join_coeiro_1)
+menu_setting.add_command(label="COEIROINK_ver2設定",command=join_coeiro_2,state="disable")
 
 #フレームの作成と位置
 #分かち書き部分:デフォルトは50句入るようにする
